@@ -1,29 +1,17 @@
+# coding:utf-8
 
 import generator
-import numpy
+
 
 # 加载数据集
 def load_data_set():
-    """
-    加载样本数据集（摘自“数据挖掘：概念与技术”，第3版）
-    Returns：
-        数据集：交易清单。 每笔交易包含几个项目。
-    """
-    # data_set = [['l1', 'l2', 'l5'], ['l2', 'l4'], ['l2', 'l3'],
-    #         ['l1', 'l2', 'l4'], ['l1', 'l3'], ['l2', 'l3'],
-    #         ['l1', 'l3'], ['l1', 'l2', 'l3', 'l5'], ['l1', 'l2', 'l3']]
-    data_set = generator.load_data('TASKNEW2', 24)
+    # data_set = generator.load_data('QUESDATA', 24)        # 单道题目分析
+    data_set = generator.load_data('TASKDATA', 8)       # 专项分析
     return data_set
 
-# 创建 C1
+
+# 创建频繁候选集C1
 def create_C1(data_set):
-    """
-    通过扫描数据集创建频繁的候选 1-itemset C1。
-    Args：
-        data_set：事务列表。 每笔交易包含几个项目。
-    Returns：
-        C1：包含所有频繁的候选 1-itemset 的集合
-    """
     C1 = set()
     for t in data_set:
         for item in t:
@@ -31,33 +19,18 @@ def create_C1(data_set):
             C1.add(item_set)
     return C1
 
+
 # 一个数据集的子集是非频繁的，则该数据集也是非频繁的
 def is_apriori(Ck_item, Lksub1):
-    """
-    判断频繁的候选 k-itemset 是否满足 Apriori 属性。
-    Args：
-        Ck_item：Ck中的一个频繁候选 k-itemset ，其中包含所有频繁候选 k-itemset 。
-        Lksub1：Lk-1，一个包含所有频繁候选 (k-1)-itemset 的集合。
-    Returns：
-        True：满足 Apriori 属性。
-        False：不满足 Apriori 属性。
-    """
     for item in Ck_item:
         sub_Ck = Ck_item - frozenset([item])
         if sub_Ck not in Lksub1:
             return False
     return True
 
+
 # 通过 Lk-1 创建 Ck
 def create_Ck(Lksub1, k):
-    """
-    创建 Ck ，这是一个包含所有频繁出现的候选 k-itemset 的集合通过 Lk-1 自己的连接操作。
-    Args：
-         Lksub1：Lk-1，一个包含所有频繁候选（k-1）个项目集的集合。
-         k：频繁项目集的项目编号。
-    Returns：
-         Ck：包含所有常见候选 k-itemset 的集合。
-    """
     Ck = set()
     len_Lksub1 = len(Lksub1)
     list_Lksub1 = list(Lksub1)
@@ -75,17 +48,8 @@ def create_Ck(Lksub1, k):
     return Ck
 
 
+# 通过从 Ck 执行删除策略来生成 Lk
 def generate_Lk_by_Ck(data_set, Ck, min_support, support_data):
-    """
-    通过从 Ck 执行删除策略来生成 Lk 。
-    Args：
-         data_set：事务列表。 每笔交易包含几个项目。
-         Ck：包含所有常见候选 k-itemset 的集合。
-         min_support：最低支持。
-         support_data：字典。 关键是频繁项集，值是支持。
-    Returns：
-         Lk：包含所有频繁出现的 k-itemset 的集合。
-    """
     Lk = set()
     item_count = {}
     for t in data_set:
@@ -103,17 +67,8 @@ def generate_Lk_by_Ck(data_set, Ck, min_support, support_data):
     return Lk
 
 
+# 生成所有频繁项集
 def generate_L(data_set, k, min_support):
-    """
-    生成所有频繁项集。
-    Args：
-         data_set：事务列表。 每笔交易包含几个项目。
-         k：所有频繁项目集的最大项目数。
-         min_support：最低支持。
-    Returns：
-         L：Lk 的列表。
-         support_data：字典。 关键是频繁项集，值是支持。
-    """
     support_data = {}
     C1 = create_C1(data_set)
     L1 = generate_Lk_by_Ck(data_set, C1, min_support, support_data)
@@ -128,16 +83,8 @@ def generate_L(data_set, k, min_support):
     return L, support_data
 
 
+# 从频繁项集生成强关联规则
 def generate_big_rules(L, support_data, min_conf):
-    """
-    从频繁的项目集生成大规则。
-    Args：
-         L：Lk 的列表。
-         support_data：字典。 关键是频繁项集，值是支持。
-         min_conf：最小置信度。
-    Returns：
-         big_rule_list：包含所有大规则的列表。 每个大规则都代表作为一个三元组。
-    """
     big_rule_list = []
     sub_set_list = []
     for i in range(0, len(L)):
@@ -153,13 +100,11 @@ def generate_big_rules(L, support_data, min_conf):
     return big_rule_list
 
 
+# 题目：0.5 0.7，专项：
 if __name__ == "__main__":
-    """
-    Test
-    """
     data_set = load_data_set()
-    L, support_data = generate_L(data_set, k=3, min_support=0.5)
-    big_rules_list = generate_big_rules(L, support_data, min_conf=0.6)
+    L, support_data = generate_L(data_set, k=3, min_support=0.2)
+    big_rules_list = generate_big_rules(L, support_data, min_conf=0.7)
     for Lk in L:
         try:
             print("="*50)

@@ -7,24 +7,14 @@ import generator
 
 
 def read_dataset():
-    """
-    学习时长：A0 - A9 共十个等级；
-    学习次数：B0 - B9 共十个等级；
-    期末成绩：G0 - G9 共十个等级；
-    """
     # labels=['学习时长', '学习次数', '与相关用户的学习时长', '与相关用户的期末成绩', '期末成绩']
     labels = ['t1', 't2', 't3', 't4', 't12', 't14', 't15', 't16', 't18', 't19', 't20', 't21', 't24', 't25', 't26', 't27', 't28', 't56', 't57', 't59', 't60', '机考成绩']
-    dataset = generator.load_data('TASKNEW2', 24)
+    dataset = generator.load_data('QUESDATA', 24)
     return dataset, labels
 
 
 def read_testset():
-    """
-    学习时长：A0 - A9 共十个等级；
-    学习次数：B0 - B9 共十个等级；
-    期末成绩：G0 - G9 共十个等级；
-    """
-    testset = generator.load_data('TASKNEW2_TEST', 23)
+    testset = generator.load_data('QUESTEST', 23)
     return testset
 
 
@@ -56,13 +46,7 @@ def splitdataset(dataset, axis, value):
     return retdataset
 
 
-'''
-选择最好的数据集划分方式
-ID3算法:以信息增益为准则选择划分属性
-C4.5算法：使用“增益率”来选择划分属性
-'''
-
-
+# C4.5算法：使用“增益率”来选择划分属性
 def C45_chooseBestFeatureToSplit(dataset):
     numFeatures = len(dataset[0])-1
     baseEnt = jisuanEnt(dataset)
@@ -174,15 +158,12 @@ if __name__ == '__main__':
     labels_tmp = labels[:] # 拷贝，createTree会改变labels
     C45desicionTree = C45_createTree(dataset, labels_tmp)
     # print('C45desicionTree:\n', C45desicionTree)
-    # treePlotter.C45_Tree(C45desicionTree)
+    treePlotter.C45_Tree(C45desicionTree)
     testSet = read_testset()
     result = classifytest(C45desicionTree, labels, testSet)
-    # for i in range(0, len(result)):
-    #     if result[i] == '0':
-    #         result[i] = 'G0'
     # print('C4.5_TestSet_classifyResult:\n', classifytest(C45desicionTree, labels, testSet))
     # 计算准确率
-    real_result = generator.load_data('TASKNEW2_TEST', 24)
+    real_result = generator.load_data('QUESTEST', 24)
     sum = 0
     print("实际值\t预测值")
     for i in range(0, len(real_result)):

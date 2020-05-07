@@ -1,3 +1,5 @@
+# coding:utf-8
+
 import mysql.connector
 
 student = mysql.connector.connect(user = 'root',
@@ -9,7 +11,7 @@ cursor = student.cursor()
 
 def convert_data():
     global cursor
-    sql = "SELECT * FROM TASKNEW;"
+    sql = "SELECT * FROM QUESRECORD;"
     cursor.execute(sql)
     data = cursor.fetchall()
     num = len(data)
@@ -46,13 +48,13 @@ def convert_data():
 
         # sql_insert = "INSERT INTO PERFORMANCE2(TIME_LENGTH, COUNT, RE_TIME_LENGTH, RE_FINAL, FINAL) " \
         #              "VALUES ('%s', '%s', '%s', '%s', '%s')" % (time_length, count,  re_time_length, re_final, final)
-        sql_insert = "INSERT INTO TASKNEW2(STU_ID, NAME, T1, T2, T3, T4, T12, T14, T15, T16, T18, T19, T20, T21, T24, T25, T26, T27, T28, T56, T57, T59, T60, TEST ) " \
+        sql_insert = "INSERT INTO QUESDATA(STU_ID, NAME, T1, T2, T3, T4, T12, T14, T15, T16, T18, T19, T20, T21, T24, T25, T26, T27, T28, T56, T57, T59, T60, TEST ) " \
                      "VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')" \
                      % (stu_id, name, t1, t2, t3, t4, t12, t14, t15, t16, t18, t19, t20, t21, t24, t25, t26, t27, t28, t56, t57, t59, t60, test)
         cursor = student.cursor()
         cursor.execute(sql_insert)
 
-    sql = "SELECT * FROM TASKNEW2;"
+    sql = "SELECT * FROM QUESDATA;"
     cursor.execute(sql)
     data2 = cursor.fetchall()
     # datalist = []
